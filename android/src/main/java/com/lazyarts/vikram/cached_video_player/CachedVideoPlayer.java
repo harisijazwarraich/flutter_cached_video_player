@@ -18,7 +18,6 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -47,7 +46,7 @@ final class CachedVideoPlayer {
     private static final String FORMAT_HLS = "hls";
     private static final String FORMAT_OTHER = "other";
 
-    private ExoPlayer exoPlayer;
+    private final ExoPlayer exoPlayer;
 
     private Surface surface;
 
@@ -114,45 +113,32 @@ final class CachedVideoPlayer {
         if (formatHint == null) {
             type = Util.inferContentType(uri.getLastPathSegment());
         } else {
-            switch (formatHint) {
-                case FORMAT_SS:
-                    type = C.TYPE_SS;
-                    break;
-                case FORMAT_DASH:
-                    type = C.TYPE_DASH;
-                    break;
-                case FORMAT_HLS:
-                    type = C.TYPE_HLS;
-                    break;
-                case FORMAT_OTHER:
-                    type = C.TYPE_OTHER;
-                    break;
-                default:
-                    type = -1;
-                    break;
-            }
+            type = switch (formatHint) {
+                case FORMAT_SS -> C.TYPE_SS;
+                case FORMAT_DASH -> C.TYPE_DASH;
+                case FORMAT_HLS -> C.TYPE_HLS;
+                case FORMAT_OTHER -> C.TYPE_OTHER;
+                default -> -1;
+            };
         }
-        switch (type) {
-            case C.TYPE_SS:
-                return new SsMediaSource.Factory(
-                        new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                        new DefaultDataSource.Factory(context, mediaDataSourceFactory))
-                        .createMediaSource(MediaItem.fromUri(uri));
-            case C.TYPE_DASH:
-                return new DashMediaSource.Factory(
-                        new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                        new DefaultDataSource.Factory(context, mediaDataSourceFactory))
-                        .createMediaSource(MediaItem.fromUri(uri));
-            case C.TYPE_HLS:
-                return new HlsMediaSource.Factory(mediaDataSourceFactory)
-                        .createMediaSource(MediaItem.fromUri(uri));
-            case C.TYPE_OTHER:
-                return new ProgressiveMediaSource.Factory(mediaDataSourceFactory)
-                        .createMediaSource(MediaItem.fromUri(uri));
-            default: {
-                throw new IllegalStateException("Unsupported type: " + type);
-            }
-        }
+        return switch (type) {
+            case C.TYPE_SS -> new SsMediaSource.Factory(
+                    new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
+                    new DefaultDataSource.Factory(context, mediaDataSourceFactory))
+                    .createMediaSource(MediaItem.fromUri(uri));
+            case C.TYPE_DASH -> new DashMediaSource.Factory(
+                    new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
+                    new DefaultDataSource.Factory(context, mediaDataSourceFactory))
+                    .createMediaSource(MediaItem.fromUri(uri));
+            case C.TYPE_HLS ->
+                    new HlsMediaSource.Factory(mediaDataSourceFactory)
+                            .createMediaSource(MediaItem.fromUri(uri));
+            case C.TYPE_OTHER ->
+                    new ProgressiveMediaSource.Factory(mediaDataSourceFactory)
+                            .createMediaSource(MediaItem.fromUri(uri));
+            default ->
+                    throw new IllegalStateException("Unsupported type: " + type);
+        };
     }
 
     private void setupVideoPlayer(
@@ -212,9 +198,7 @@ final class CachedVideoPlayer {
                     @Override
                     public void onPlayerError(@NonNull PlaybackException error) {
                         setBuffering(false);
-                        if (eventSink != null) {
-                            eventSink.error("VideoError", "Video player had error " + error, null);
-                        }
+                        eventSink.error("VideoError", "Video player had error " + error, null);
                     }
                 });
     }
@@ -230,7 +214,7 @@ final class CachedVideoPlayer {
 
     private static void setAudioAttributes(ExoPlayer exoPlayer, boolean isMixMode) {
         exoPlayer.setAudioAttributes(
-                new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
+                new AudioAttributes.Builder().setContentType(com.google.android.exoplayer2.C.AUDIO_CONTENT_TYPE_MOVIE).build(), !isMixMode);
     }
 
     void play() {
@@ -253,9 +237,7 @@ final class CachedVideoPlayer {
     void setPlaybackSpeed(double value) {
         // We do not need to consider pitch and skipSilence for now as we do not handle them and
         // therefore never diverge from the default values.
-        final PlaybackParameters playbackParameters = new PlaybackParameters(((float) value));
-
-        exoPlayer.setPlaybackParameters(playbackParameters);
+        exoPlayer.setPlaybackSpeed((float) value);
     }
 
     void seekTo(int location) {

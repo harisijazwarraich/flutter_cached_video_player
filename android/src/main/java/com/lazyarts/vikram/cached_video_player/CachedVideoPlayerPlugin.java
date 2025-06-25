@@ -7,6 +7,9 @@ package com.lazyarts.vikram.cached_video_player;
 import android.content.Context;
 import android.os.Build;
 import android.util.LongSparseArray;
+
+import androidx.annotation.NonNull;
+
 import io.flutter.FlutterInjector;
 import io.flutter.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -31,7 +34,7 @@ public class CachedVideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
   private static final String TAG = "VideoPlayerPlugin";
   private final LongSparseArray<CachedVideoPlayer> videoPlayers = new LongSparseArray<>();
   private FlutterState flutterState;
-  private VideoPlayerOptions options = new VideoPlayerOptions();
+  private final VideoPlayerOptions options = new VideoPlayerOptions();
 
   /** Register this with the v2 embedding for the plugin to respond to lifecycle callbacks. */
   public CachedVideoPlayerPlugin() {}
@@ -62,20 +65,7 @@ public class CachedVideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
 
-    if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      try {
-        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomSSLSocketFactory());
-      } catch (KeyManagementException | NoSuchAlgorithmException e) {
-        Log.w(
-            TAG,
-            "Failed to enable TLSv1.1 and TLSv1.2 Protocols for API level 19 and below.\n"
-                + "For more information about Socket Security, please consult the following link:\n"
-                + "https://developer.android.com/reference/javax/net/ssl/SSLSocket",
-            e);
-      }
-    }
-
-    final FlutterInjector injector = FlutterInjector.instance();
+     final FlutterInjector injector = FlutterInjector.instance();
     this.flutterState =
         new FlutterState(
             binding.getApplicationContext(),
@@ -87,7 +77,7 @@ public class CachedVideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     if (flutterState == null) {
       Log.wtf(TAG, "Detached from the engine before registering to it.");
     }
@@ -142,7 +132,6 @@ public class CachedVideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               null,
               options);
     } else {
-      @SuppressWarnings("unchecked")
       Map<String, String> httpHeaders = arg.getHttpHeaders();
       player =
           new CachedVideoPlayer(

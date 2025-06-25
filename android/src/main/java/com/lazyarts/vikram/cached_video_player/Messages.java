@@ -28,13 +28,13 @@ public class Messages {
       this.textureId = setterArg;
     }
 
-    HashMap toMap() {
+    HashMap<String, Object> toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       return toMapResult;
     }
 
-    static TextureMessage fromMap(HashMap map) {
+    static TextureMessage fromMap(HashMap<String, Object> map) {
       TextureMessage fromMapResult = new TextureMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -87,17 +87,17 @@ public class Messages {
       this.formatHint = setterArg;
     }
 
-    private HashMap httpHeaders;
+    private HashMap<String, Object> httpHeaders;
 
-    public HashMap getHttpHeaders() {
-      return httpHeaders;
+    public HashMap<String, String> getHttpHeaders() {
+      return castToStringMap(httpHeaders);
     }
 
-    public void setHttpHeaders(HashMap setterArg) {
+    public void setHttpHeaders(HashMap<String, Object> setterArg) {
       this.httpHeaders = setterArg;
     }
 
-    HashMap toMap() {
+    HashMap<String, Object> toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("asset", asset);
       toMapResult.put("uri", uri);
@@ -107,7 +107,7 @@ public class Messages {
       return toMapResult;
     }
 
-    static CreateMessage fromMap(HashMap map) {
+    static CreateMessage fromMap(HashMap<String, Object> map) {
       CreateMessage fromMapResult = new CreateMessage();
       Object asset = map.get("asset");
       fromMapResult.asset = (String) asset;
@@ -118,7 +118,7 @@ public class Messages {
       Object formatHint = map.get("formatHint");
       fromMapResult.formatHint = (String) formatHint;
       Object httpHeaders = map.get("httpHeaders");
-      fromMapResult.httpHeaders = (HashMap) httpHeaders;
+      fromMapResult.httpHeaders = castToMap(httpHeaders);
       return fromMapResult;
     }
   }
@@ -145,14 +145,14 @@ public class Messages {
       this.isLooping = setterArg;
     }
 
-    HashMap toMap() {
+    HashMap<String, Object> toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("isLooping", isLooping);
       return toMapResult;
     }
 
-    static LoopingMessage fromMap(HashMap map) {
+    static LoopingMessage fromMap(HashMap<String, Object> map) {
       LoopingMessage fromMapResult = new LoopingMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -187,14 +187,14 @@ public class Messages {
       this.volume = setterArg;
     }
 
-    HashMap toMap() {
+    HashMap<String, Object> toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("volume", volume);
       return toMapResult;
     }
 
-    static VolumeMessage fromMap(HashMap map) {
+    static VolumeMessage fromMap(HashMap<String, Object> map) {
       VolumeMessage fromMapResult = new VolumeMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -229,14 +229,14 @@ public class Messages {
       this.speed = setterArg;
     }
 
-    HashMap toMap() {
+    HashMap<String, Object> toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("speed", speed);
       return toMapResult;
     }
 
-    static PlaybackSpeedMessage fromMap(HashMap map) {
+    static PlaybackSpeedMessage fromMap(HashMap<String, Object> map) {
       PlaybackSpeedMessage fromMapResult = new PlaybackSpeedMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -271,14 +271,14 @@ public class Messages {
       this.position = setterArg;
     }
 
-    HashMap toMap() {
+    HashMap<String, Object> toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("position", position);
       return toMapResult;
     }
 
-    static PositionMessage fromMap(HashMap map) {
+    static PositionMessage fromMap(HashMap<String, Object> map) {
       PositionMessage fromMapResult = new PositionMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -306,13 +306,13 @@ public class Messages {
       this.mixWithOthers = setterArg;
     }
 
-    HashMap toMap() {
+    HashMap<String, Object> toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("mixWithOthers", mixWithOthers);
       return toMapResult;
     }
 
-    static MixWithOthersMessage fromMap(HashMap map) {
+    static MixWithOthersMessage fromMap(HashMap<String, Object> map) {
       MixWithOthersMessage fromMapResult = new MixWithOthersMessage();
       Object mixWithOthers = map.get("mixWithOthers");
       fromMapResult.mixWithOthers = (Boolean) mixWithOthers;
@@ -355,7 +355,7 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   api.initialize();
                   wrapped.put("result", null);
@@ -377,10 +377,10 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  CreateMessage input = CreateMessage.fromMap((HashMap) message);
+                  CreateMessage input = CreateMessage.fromMap(castToMap(message));
                   TextureMessage output = api.create(input);
                   wrapped.put("result", output.toMap());
                 } catch (Exception exception) {
@@ -401,10 +401,10 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TextureMessage input = TextureMessage.fromMap(castToMap(message));
                   api.dispose(input);
                   wrapped.put("result", null);
                 } catch (Exception exception) {
@@ -425,10 +425,10 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  LoopingMessage input = LoopingMessage.fromMap((HashMap) message);
+                  LoopingMessage input = LoopingMessage.fromMap(castToMap(message));
                   api.setLooping(input);
                   wrapped.put("result", null);
                 } catch (Exception exception) {
@@ -449,10 +449,10 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  VolumeMessage input = VolumeMessage.fromMap((HashMap) message);
+                  VolumeMessage input = VolumeMessage.fromMap(castToMap(message));
                   api.setVolume(input);
                   wrapped.put("result", null);
                 } catch (Exception exception) {
@@ -473,10 +473,10 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  PlaybackSpeedMessage input = PlaybackSpeedMessage.fromMap((HashMap) message);
+                  PlaybackSpeedMessage input = PlaybackSpeedMessage.fromMap(castToMap(message));
                   api.setPlaybackSpeed(input);
                   wrapped.put("result", null);
                 } catch (Exception exception) {
@@ -497,10 +497,10 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TextureMessage input = TextureMessage.fromMap(castToMap(message));
                   api.play(input);
                   wrapped.put("result", null);
                 } catch (Exception exception) {
@@ -521,10 +521,10 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TextureMessage input = TextureMessage.fromMap(castToMap(message));
                   PositionMessage output = api.position(input);
                   wrapped.put("result", output.toMap());
                 } catch (Exception exception) {
@@ -545,10 +545,10 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  PositionMessage input = PositionMessage.fromMap((HashMap) message);
+                  PositionMessage input = PositionMessage.fromMap(castToMap(message));
                   api.seekTo(input);
                   wrapped.put("result", null);
                 } catch (Exception exception) {
@@ -569,10 +569,10 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TextureMessage input = TextureMessage.fromMap(castToMap(message));
                   api.pause(input);
                   wrapped.put("result", null);
                 } catch (Exception exception) {
@@ -593,10 +593,11 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                HashMap<String, HashMap<String, Object>> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  MixWithOthersMessage input = MixWithOthersMessage.fromMap((HashMap) message);
+                  MixWithOthersMessage input =
+                          MixWithOthersMessage.fromMap(castToMap(message));
                   api.setMixWithOthers(input);
                   wrapped.put("result", null);
                 } catch (Exception exception) {
@@ -611,7 +612,30 @@ public class Messages {
     }
   }
 
-  private static HashMap wrapError(Exception exception) {
+  private static HashMap<String, String> castToStringMap(HashMap<String, Object> raw) {
+    HashMap<String, String> result = new HashMap<>();
+    for (HashMap.Entry<String, Object> entry : raw.entrySet()) {
+      if (entry.getValue() instanceof String) {
+        result.put(entry.getKey(), (String) entry.getValue());
+      }
+    }
+    return result;
+  }
+
+  private static HashMap<String, Object> castToMap(Object message) {
+    if (message instanceof HashMap<?, ?> rawMap) {
+      HashMap<String, Object> result = new HashMap<>();
+      for (HashMap.Entry<?, ?> entry : rawMap.entrySet()) {
+        if (entry.getKey() instanceof String key) {
+          result.put(key, entry.getValue());
+        }
+      }
+      return result;
+    }
+    throw new IllegalArgumentException("Expected Map<String, Object> but got: " + message.getClass().getSimpleName());
+  }
+
+  private static HashMap<String, Object> wrapError(Exception exception) {
     HashMap<String, Object> errorMap = new HashMap<>();
     errorMap.put("message", exception.toString());
     errorMap.put("code", exception.getClass().getSimpleName());

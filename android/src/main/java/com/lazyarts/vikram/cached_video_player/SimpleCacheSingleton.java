@@ -12,7 +12,7 @@ public class SimpleCacheSingleton {
     LeastRecentlyUsedCacheEvictor evictor;
     SimpleCache simpleCache;
 
-    private static SimpleCacheSingleton instance;
+    private static volatile SimpleCacheSingleton instance;
 
     private SimpleCacheSingleton(Context context, long maxCacheSize) {
         evictor = new LeastRecentlyUsedCacheEvictor(maxCacheSize);

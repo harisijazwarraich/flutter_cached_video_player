@@ -11,6 +11,8 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
     show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
+export 'cached_video_player_web.dart'
+if (dart.library.io) 'cached_video_player.dart';
 
 import 'src/closed_caption_file.dart';
 export 'src/closed_caption_file.dart';
@@ -19,6 +21,8 @@ final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
   // This will clear all open videos on the platform when a full restart is
   // performed.
   ..init();
+
+
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [CachedVideoPlayerController].
@@ -199,12 +203,14 @@ class CachedVideoPlayerController
   /// [httpHeaders] option allows to specify HTTP headers
   /// for the request to the [dataSource].
   CachedVideoPlayerController.network(
-    this.dataSource, {
-    this.formatHint,
-    this.closedCaptionFile,
-    this.videoPlayerOptions,
-    this.httpHeaders = const {},
-  })  : dataSourceType = DataSourceType.network,
+      this.dataSource, {
+        this.formatHint,
+        this.closedCaptionFile,
+        this.videoPlayerOptions,
+        Map<String, Object>? httpHeaders,
+      }) :
+        httpHeaders = httpHeaders != null ? httpHeaders.map((k, v) => MapEntry(k, v.toString())) : const {},
+        dataSourceType = DataSourceType.network,
         package = null,
         super(CachedVideoPlayerValue(duration: Duration.zero));
 

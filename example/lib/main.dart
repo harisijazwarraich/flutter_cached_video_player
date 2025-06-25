@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 
@@ -55,6 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
     controller = CachedVideoPlayerController.network(
         "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
     controller.initialize().then((value) {
+      if (kIsWeb) {
+        controller.setVolume(0.0);
+      }
       controller.play();
       setState(() {});
     });

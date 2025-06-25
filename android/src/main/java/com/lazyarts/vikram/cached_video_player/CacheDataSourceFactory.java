@@ -2,6 +2,8 @@ package com.lazyarts.vikram.cached_video_player;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
@@ -15,10 +17,9 @@ import java.util.Map;
 
 class CacheDataSourceFactory implements DataSource.Factory {
     private final Context context;
-    private DefaultDataSource.Factory defaultDatasourceFactory;
     private final long maxFileSize, maxCacheSize;
 
-    private DefaultHttpDataSource.Factory defaultHttpDataSourceFactory;
+    private final DefaultHttpDataSource.Factory defaultHttpDataSourceFactory;
 
     CacheDataSourceFactory(Context context, long maxCacheSize, long maxFileSize) {
         super();
@@ -35,11 +36,12 @@ class CacheDataSourceFactory implements DataSource.Factory {
         defaultHttpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
     }
 
+    @NonNull
     @Override
     public DataSource createDataSource() {
         DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context).build();
 
-        defaultDatasourceFactory = new DefaultDataSource.Factory(this.context, defaultHttpDataSourceFactory);
+        DefaultDataSource.Factory defaultDatasourceFactory = new DefaultDataSource.Factory(this.context, defaultHttpDataSourceFactory);
         defaultDatasourceFactory.setTransferListener(bandwidthMeter);
 
         SimpleCache simpleCache = SimpleCacheSingleton.getInstance(context, maxCacheSize).simpleCache;
